@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   ExternalLink,
   Github,
@@ -20,6 +22,12 @@ import {
   Award,
   Grid3x3,
   LayoutGrid,
+  User,
+  Code2,
+  Layers,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import { getAllProjects, type Project } from "@/lib/supabase-projects"
 import { AnimatedBackground } from "@/components/animated-background"
@@ -33,6 +41,11 @@ export default function PortfolioPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: number]: number }>({})
   const [gridLayout, setGridLayout] = useState<"2" | "3">("3")
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+  const [lightboxImages, setLightboxImages] = useState<string[]>([])
+  const [currentLightboxIndex, setCurrentLightboxIndex] = useState(0)
 
   useEffect(() => {
     loadProjects()
@@ -92,6 +105,23 @@ export default function PortfolioPage() {
     }
   }, [filteredProjects])
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightboxImage) return
+
+      if (e.key === "Escape") {
+        closeLightbox()
+      } else if (e.key === "ArrowLeft") {
+        navigateLightbox("prev")
+      } else if (e.key === "ArrowRight") {
+        navigateLightbox("next")
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [lightboxImage, currentLightboxIndex, lightboxImages])
+
   const categories = Array.from(new Set(projects.map((p) => p.category)))
   const statuses = Array.from(new Set(projects.map((p) => p.status)))
 
@@ -103,6 +133,37 @@ export default function PortfolioPage() {
     }
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.completed
     return <Badge className={config.className}>{config.label}</Badge>
+  }
+
+  const openProjectDetails = (project: Project) => {
+    setSelectedProject(project)
+    setIsModalOpen(true)
+  }
+
+  const openLightbox = (images: string[], index: number) => {
+    setLightboxImages(images)
+    setCurrentLightboxIndex(index)
+    setLightboxImage(images[index])
+  }
+
+  const closeLightbox = () => {
+    setLightboxImage(null)
+    setLightboxImages([])
+    setCurrentLightboxIndex(0)
+  }
+
+  const navigateLightbox = (direction: "prev" | "next") => {
+    if (lightboxImages.length === 0) return
+
+    let newIndex = currentLightboxIndex
+    if (direction === "prev") {
+      newIndex = currentLightboxIndex === 0 ? lightboxImages.length - 1 : currentLightboxIndex - 1
+    } else {
+      newIndex = currentLightboxIndex === lightboxImages.length - 1 ? 0 : currentLightboxIndex + 1
+    }
+
+    setCurrentLightboxIndex(newIndex)
+    setLightboxImage(lightboxImages[newIndex])
   }
 
   if (isLoading) {
@@ -291,7 +352,10 @@ export default function PortfolioPage() {
                   transition={{ delay: index * 0.05 }}
                   layout
                 >
-                  <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 h-full flex flex-col group hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
+                  <Card
+                    className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 h-full flex flex-col group hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 cursor-pointer"
+                    onClick={() => openProjectDetails(project)}
+                  >
                     <CardHeader className="p-0">
                       {/* Project Image */}
                       <div className="relative aspect-video bg-slate-700/50 rounded-t-lg overflow-hidden">
@@ -342,7 +406,7 @@ export default function PortfolioPage() {
                           <CardTitle className="text-white text-xl mb-2 group-hover:text-purple-300 transition-colors">
                             {project.title}
                           </CardTitle>
-                          <CardDescription className="text-gray-400 leading-relaxed">
+                          <CardDescription className="text-gray-400 leading-relaxed line-clamp-2">
                             {project.description}
                           </CardDescription>
                         </div>
@@ -389,6 +453,7 @@ export default function PortfolioPage() {
                           <Button
                             asChild
                             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <a href={project.project_url} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="w-4 h-4 mr-2" />
@@ -401,6 +466,7 @@ export default function PortfolioPage() {
                             asChild
                             variant="outline"
                             className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20 bg-transparent"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                               <Github className="w-4 h-4" />
@@ -440,6 +506,219 @@ export default function PortfolioPage() {
           )}
         </div>
       </section>
+
+      {/* Project Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-700 text-white p-0 overflow-hidden">
+          <ScrollArea className="max-h-[90vh]">
+            <div className="relative">
+              {selectedProject?.images && selectedProject.images.length > 0 && (
+                <div className="relative h-64 md:h-80 w-full overflow-hidden">
+                  <img
+                    src={selectedProject.images[0] || "/placeholder.svg"}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                    onClick={() => openLightbox(selectedProject.images, 0)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                  <div className="absolute top-4 right-4">
+                    {selectedProject && getStatusBadge(selectedProject.status)}
+                  </div>
+                </div>
+              )}
+
+              <div className="p-6 md:p-8 space-y-6">
+                <DialogHeader>
+                  <DialogTitle className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    {selectedProject?.title}
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-3 py-1">
+                    {selectedProject?.category}
+                  </Badge>
+                  {selectedProject?.year && (
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1 flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {selectedProject.year}
+                    </Badge>
+                  )}
+                  {selectedProject?.client && (
+                    <Badge className="bg-slate-700/50 text-gray-300 border-slate-600 px-3 py-1 flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      {selectedProject.client}
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-xl font-semibold text-purple-300 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Sobre o Projeto
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {selectedProject?.long_description || selectedProject?.description}
+                  </p>
+                </div>
+
+                {selectedProject?.technologies && selectedProject.technologies.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold text-purple-300 flex items-center gap-2">
+                      <Code2 className="w-5 h-5" />
+                      Tecnologias Utilizadas
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.technologies.map((tech, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="outline"
+                          className="bg-slate-800/50 border-slate-600 text-gray-300 px-3 py-1.5 text-sm"
+                        >
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedProject?.features && selectedProject.features.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold text-purple-300 flex items-center gap-2">
+                      <Layers className="w-5 h-5" />
+                      Funcionalidades
+                    </h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {selectedProject.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-gray-300">
+                          <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {selectedProject?.images && selectedProject.images.length > 1 && (
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold text-purple-300">Galeria</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {selectedProject.images.slice(1).map((image, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-video rounded-lg overflow-hidden group cursor-pointer"
+                          onClick={() => openLightbox(selectedProject.images, idx + 1)}
+                        >
+                          <img
+                            src={image || "/placeholder.svg"}
+                            alt={`${selectedProject.title} - ${idx + 2}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                            <Search className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap gap-3 pt-4">
+                  {selectedProject?.show_project_button && selectedProject.project_url && (
+                    <Button
+                      asChild
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    >
+                      <a href={selectedProject.project_url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Visitar Projeto
+                      </a>
+                    </Button>
+                  )}
+                  {selectedProject?.github_url && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 bg-transparent"
+                    >
+                      <a href={selectedProject.github_url} target="_blank" rel="noopener noreferrer">
+                        <Github className="w-4 h-4 mr-2" />
+                        Ver no GitHub
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 text-white hover:bg-white/10 z-10"
+              onClick={closeLightbox}
+            >
+              <X className="w-6 h-6" />
+            </Button>
+
+            {lightboxImages.length > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 z-10"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigateLightbox("prev")
+                  }}
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 z-10"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigateLightbox("next")
+                  }}
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </Button>
+              </>
+            )}
+
+            <motion.img
+              key={lightboxImage}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={lightboxImage}
+              alt="Fullscreen view"
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {lightboxImages.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full">
+                {currentLightboxIndex + 1} / {lightboxImages.length}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
