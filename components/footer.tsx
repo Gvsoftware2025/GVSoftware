@@ -4,8 +4,16 @@ import type React from "react"
 
 import Link from "next/link"
 import Image from "next/image"
-import { Instagram, Facebook, Music, Mail, Phone } from "lucide-react"
+import { Instagram, Facebook, Mail, Phone } from "lucide-react"
 import { toast } from "sonner"
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.321 5.562a5.124 5.124 0 0 1-.443-.258 6.228 6.228 0 0 1-1.138-.969c-.972-1.167-1.13-2.19-1.17-2.664h.006c-.022-.267-.037-.505-.041-.719h-3.494v14.943c0 .203 0 .405-.01.605 0 .018-.003.033-.004.05v.017a3.483 3.483 0 0 1-1.988 2.928 3.538 3.538 0 0 1-1.482.335 3.49 3.49 0 0 1-3.484-3.49 3.49 3.49 0 0 1 3.484-3.488c.36 0 .704.055 1.029.156l.006-3.509a7.006 7.006 0 0 0-1.035-.077c-1.896 0-3.68.748-5.022 2.106a7.026 7.026 0 0 0-2.064 5.021 7.014 7.014 0 0 0 2.064 5.003 6.977 6.977 0 0 0 5.022 2.106 6.977 6.977 0 0 0 5.022-2.106 7.026 7.026 0 0 0 2.064-5.003V8.548a9.65 9.65 0 0 0 5.645 1.805v-3.51a6.112 6.112 0 0 1-2.517-.728l-.002.001z" />
+    </svg>
+  )
+}
 
 export function Footer() {
   const handleTikTokClick = (e: React.MouseEvent) => {
@@ -133,7 +141,7 @@ export function Footer() {
                 className="group relative w-12 h-12 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 flex items-center justify-center hover:border-cyan-500/50 transition-all duration-300 overflow-hidden cursor-pointer"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <Music className="w-5 h-5 text-gray-400 group-hover:text-cyan-500 transition-colors relative z-10" />
+                <TikTokIcon className="w-5 h-5 text-gray-400 group-hover:text-cyan-500 transition-colors relative z-10" />
               </button>
             </div>
           </div>

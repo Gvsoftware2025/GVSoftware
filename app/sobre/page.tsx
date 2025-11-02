@@ -15,14 +15,92 @@ import {
   CheckCircle,
   ArrowRight,
   Sparkles,
+  Rocket,
+  Calendar,
+  Star,
+  Heart,
+  Lightbulb,
 } from "lucide-react"
 import Link from "next/link"
+import { AnimatedBackground } from "@/components/animated-background"
 
 export default function SobrePage() {
+  const teamMembers = [
+    {
+      name: "Gabriel Vieira",
+      role: "CEO & Full Stack Developer",
+      image: "/professional-developer-portrait.png",
+      bio: "Especialista em desenvolvimento web com foco em soluções escaláveis e inovadoras.",
+      skills: ["React", "Next.js", "Node.js", "TypeScript"],
+      social: {
+        github: "#",
+        linkedin: "#",
+        email: "gabriel@gvsoftware.com",
+      },
+    },
+    {
+      name: "Vitor Silva",
+      role: "CTO & Backend Specialist",
+      image: "/tech-lead-portrait.png",
+      bio: "Arquiteto de software com expertise em sistemas distribuídos e cloud computing.",
+      skills: ["Python", "AWS", "Docker", "PostgreSQL"],
+      social: {
+        github: "#",
+        linkedin: "#",
+        email: "vitor@gvsoftware.com",
+      },
+    },
+    {
+      name: "Ana Costa",
+      role: "UI/UX Designer",
+      image: "/designer-portrait.png",
+      bio: "Designer criativa focada em experiências digitais memoráveis e interfaces intuitivas.",
+      skills: ["Figma", "Design Systems", "Prototyping", "User Research"],
+      social: {
+        github: "#",
+        linkedin: "#",
+        email: "ana@gvsoftware.com",
+      },
+    },
+  ]
+
+  const timeline = [
+    {
+      year: "2024",
+      title: "Fundação da GV Software",
+      description: "Início da jornada com foco em soluções web inovadoras e design excepcional.",
+      icon: Rocket,
+      color: "from-purple-600 to-blue-600",
+    },
+    {
+      year: "2024 Q2",
+      title: "Primeiros Clientes",
+      description: "Conquistamos nossos primeiros clientes e entregamos projetos de sucesso.",
+      icon: Star,
+      color: "from-blue-600 to-cyan-600",
+    },
+    {
+      year: "2024 Q3",
+      title: "Expansão da Equipe",
+      description: "Crescimento do time com profissionais especializados em diferentes áreas.",
+      icon: Users,
+      color: "from-cyan-600 to-teal-600",
+    },
+    {
+      year: "2025",
+      title: "Novos Horizontes",
+      description: "Expandindo nosso portfólio e alcançando novos mercados com soluções inovadoras.",
+      icon: TrendingUp,
+      color: "from-teal-600 to-green-600",
+    },
+  ]
+
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-slate-900 relative">
+      <AnimatedBackground />
+
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-32 pb-20 px-4 relative">
         <div className="container mx-auto text-center">
           <div className="animate-fade-in">
             <Badge className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-purple-300 border border-purple-500/30 px-6 py-3 text-sm backdrop-blur-sm mb-8">
@@ -99,6 +177,69 @@ export default function SobrePage() {
         </div>
       </section>
 
+      <section className="py-20 px-4 bg-slate-800/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-16 animate-fade-in">
+            <Badge className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-purple-300 border border-purple-500/30 px-6 py-3 text-sm backdrop-blur-sm mb-6">
+              <Calendar className="w-4 h-4 mr-2" />
+              Nossa Jornada
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-poppins">
+              Linha do <span className="gradient-text">Tempo</span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Acompanhe nossa evolução e os marcos importantes da nossa trajetória.
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="relative">
+              {/* Timeline Line */}
+              <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-600 via-blue-600 to-green-600 transform md:-translate-x-1/2" />
+
+              {/* Timeline Items */}
+              <div className="space-y-12">
+                {timeline.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`relative flex items-center ${
+                      index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                    } animate-fade-in`}
+                    style={{ animationDelay: `${index * 0.2}s` }}
+                  >
+                    {/* Timeline Dot */}
+                    <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 z-10">
+                      <div
+                        className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center shadow-2xl border-4 border-slate-900`}
+                      >
+                        <item.icon className="w-8 h-8 text-white" />
+                      </div>
+                    </div>
+
+                    {/* Content Card */}
+                    <div
+                      className={`w-full md:w-5/12 ml-24 md:ml-0 ${index % 2 === 0 ? "md:mr-auto md:pr-16" : "md:ml-auto md:pl-16"}`}
+                    >
+                      <Card className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-3 mb-3">
+                            <Badge className="bg-gradient-to-r from-purple-600/30 to-blue-600/30 text-purple-300 border border-purple-500/30">
+                              {item.year}
+                            </Badge>
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                          <p className="text-gray-400 leading-relaxed">{item.description}</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mission and Vision */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
@@ -153,7 +294,7 @@ export default function SobrePage() {
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Award className="w-8 h-8 text-white" />
+                    <Heart className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">Nossos Valores</h3>
                   <p className="text-gray-400">Os princípios que norteiam cada projeto e decisão</p>
@@ -163,7 +304,7 @@ export default function SobrePage() {
                     {
                       title: "Inovação",
                       description: "Sempre buscando as melhores e mais modernas tecnologias",
-                      icon: Sparkles,
+                      icon: Lightbulb,
                     },
                     {
                       title: "Qualidade",
@@ -195,6 +336,10 @@ export default function SobrePage() {
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16 animate-fade-in">
+            <Badge className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-purple-300 border border-purple-500/30 px-6 py-3 text-sm backdrop-blur-sm mb-6">
+              <Globe className="w-4 h-4 mr-2" />
+              Diferenciais
+            </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-poppins">
               Nossos <span className="gradient-text">Diferenciais</span>
             </h2>
@@ -284,7 +429,7 @@ export default function SobrePage() {
                   <Link href="/portfolio">
                     <Button
                       variant="outline"
-                      className="border-slate-600 text-gray-300 hover:bg-slate-800 px-8 py-3 rounded-full font-medium text-lg hover:border-purple-500 transition-all duration-300"
+                      className="border-slate-600 text-gray-300 hover:bg-slate-800 px-8 py-3 rounded-full font-medium text-lg hover:border-purple-500 transition-all duration-300 bg-transparent"
                     >
                       <Award className="w-5 h-5 mr-2" />
                       Ver Nosso Trabalho
