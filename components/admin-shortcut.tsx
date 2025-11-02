@@ -11,7 +11,7 @@ export function AdminShortcut() {
       // Ctrl + Shift + A
       if (event.ctrlKey && event.shiftKey && event.key === "A") {
         event.preventDefault()
-        router.push("/admin/portfolio")
+        router.push("/j9/k0/portfolio")
       }
     }
 

@@ -13,7 +13,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const pathname = usePathname()
-  const isAdminPage = pathname?.startsWith("/admin")
+  const isAdminPage = pathname?.startsWith("/j9/k0")
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -29,7 +29,7 @@ export function Header() {
     }, 1000)
 
     if (clickCount === 2) {
-      router.push("/admin/portfolio")
+      router.push("/j9/k0/portfolio")
       setClickCount(0)
     }
   }

@@ -35,7 +35,7 @@ export default function ModernHeader() {
     setAdminClickCount((prev) => prev + 1)
     if (adminClickCount === 1) {
       // Double click detected
-      router.push("/admin")
+      router.push("/j9/k0")
       setAdminClickCount(0)
     }
   }
@@ -45,7 +45,7 @@ export default function ModernHeader() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === "A") {
         e.preventDefault()
-        router.push("/admin")
+        router.push("/j9/k0")
       }
     }
 
@@ -57,7 +57,7 @@ export default function ModernHeader() {
     <header className="sticky top-0 z-50 w-full">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-purple-900/10 to-blue-900/10 backdrop-blur-xl border-b border-purple-500/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent animate-pulse"></div>
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent animate-pulse"></div>
       </div>

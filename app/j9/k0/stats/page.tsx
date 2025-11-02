@@ -240,7 +240,7 @@ export default function AdminStatsPage() {
 
             <div className="flex items-center space-x-4">
               <Button
-                onClick={() => router.push("/admin/portfolio")}
+                onClick={() => router.push("/j9/k0/portfolio")}
                 variant="outline"
                 size="sm"
                 className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20 bg-transparent"

@@ -42,7 +42,7 @@ export default function Navbar() {
         console.log("✅ Acesso definido no navbar")
 
         // Redirecionar
-        window.location.href = "/admin"
+        window.location.href = "/j9/k0"
       }
     }
 
